@@ -12,6 +12,41 @@
         <button onclick="Stop()"> Stop </button>
     </div>
 
+    <div class="f">
+        <div class="f">
+            <h3>Oscillator</h3>
+            <button onclick="Play2()"> Play 2 </button>
+            <table>
+                <tr>
+                    <th>Type</th>
+                    <td>
+                        <select id="type" onchange="Setup()">
+                            <option value="sine">Sine</option>
+                            <option value="square">Sauare</option>
+                            <option value="sawtooth">SawTooth</option>
+                            <option value="triangle">Triangle</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Freq(Hz)</th>
+                    <td>
+                        <input type="range" min="50" max="3000" id="freq" value="440" oninput="Setup()">
+                    </td>
+                    <td id="freqdisp">1000</td>
+                </tr>
+                <tr>
+                    <th>Level</th>
+                    <td><input type="range" min="0" max="1" step="0.01" value="0.5" id="level" value="1" oninput="Setup()"></td>
+                    <td id="leveldisp">0.5</td>
+                </tr>
+            </table>
+        </div>
+        <div class="f">
+            <h3>Oscillator Timing Control</h3>
+            <button onclick="Start()">Start</button>
+        </div>
+    </div>
   
     <script>
         let osc1;
@@ -27,6 +62,48 @@
 
         function Stop() {
             osc1.stop();
+        }
+
+        let isPlaying2 = false;
+        let osc2;
+        let gain2;
+        function Play2() {
+            if (isPlaying2) {
+                return;
+            }
+
+            audioctx = new AudioContext();
+            osc2 = new OscillatorNode(audioctx);
+            gain2 = new GainNode(audioctx);
+            // osc -> gain -> destination
+            osc2.connect(gain2).connect(audioctx.destination);
+            osc2.start();
+            isPlaying2 = true;
+        }
+
+        function Setup() {
+            let type = document.getElementById("type").value;
+            let freq = parseFloat(document.getElementById("freq").value);
+            let level = parseFloat(document.getElementById("level").value);
+            document.getElementById("freqdisp").innerHTML = freq;
+            document.getElementById("leveldisp").innerHTML = level;
+
+            osc2.type = type;
+            osc2.frequency.value = freq;
+            gain2.gain.value = level;
+        }
+
+        function Start() {
+            let audioctx = new AudioContext();
+            let t0 = audioctx.currentTime;
+
+            for (let i = 0; i < 10; i++) {
+                let osc = new OscillatorNode(audioctx);
+                osc.connect(audioctx.destination);
+                // 0.5sごとに0.1sの長さの音を出すオシレータを10個作成
+                osc.start(t0 + i * 0.5 + 0.5);
+                osc.stop(t0 + i * 0.5 + 0.6);
+            }
         }
     </script>
 </body>
