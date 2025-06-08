@@ -47,6 +47,29 @@
             <button onclick="Start()">Start</button>
         </div>
     </div>
+
+    <div class="f">
+        <h3>Vibrato Test</h3>
+        <button id="vibPlay" onclick="vibPlay()">vibPlay</button><br>
+        <table>
+            <tr>
+                <th>LFO Freq</th>
+                <td><input type="range" id="lfofreq" min="0.1" max="20" step="0.1" value="5" oninput="Setup3()"></td>
+                <td><td id="lfofreqval"></td></td>
+            </tr>
+            <tr>
+                <th>Depth</th>
+                <td><input type="range" id="depth" min="0" max="100" value="10" oninput="Setup3()"></td>
+                <td id="depthval"></td>
+            </tr>
+            <tr>
+                <th>OSC Freq</th>
+                <td><input type="range" id="oscfreq" min="50" max="3000" value="440" oninput="Setup3()"></td>
+                <td id="oscfreqval"></td>
+            </tr>
+        </table>
+    </div>
+
   
     <script>
         let osc1;
@@ -104,6 +127,39 @@
                 osc.start(t0 + i * 0.5 + 0.5);
                 osc.stop(t0 + i * 0.5 + 0.6);
             }
+        }
+
+
+        let osc3;
+        let lfo3;
+        let depth3;
+        let isPlaying3 = false;
+        function vibPlay() {
+            if (isPlaying3) {
+                return;
+            }
+
+            let audioctx = new AudioContext();
+            osc3 = new OscillatorNode(audioctx);
+            lfo3 = new OscillatorNode(audioctx, {frequency:5});
+            depth3 = new GainNode(audioctx, {gain:10});
+
+            // osc -> destination
+            osc3.connect(audioctx.destination);
+
+            // lfo -> gain -> osc -> destination
+            lfo3.connect(depth3).connect(osc3.frequency);
+
+            osc3.start();
+            lfo3.start();
+
+            isPlaying3 = true;
+        }
+
+        function Setup3() {
+            osc3.frequency.value = document.getElementById("oscfreqval").innerHTML = document.getElementById("oscfreq").value;
+            lfo3.frequency.value = document.getElementById("lfofreqval").innerHTML = document.getElementById("lfofreq").value;
+            depth3.gain.value = document.getElementById("depthval").innerHTML = document.getElementById("depth").value;
         }
     </script>
 </body>
