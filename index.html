@@ -6,21 +6,33 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>First Step</h1>
-    <button onclick="Play()"> Play </button><br>
-    <button onclick="Stop()"> Stop </button>
+    <div class="f">
+        <h3>First Step</h3>
+        <button onclick="Play()"> Play </button>
+        <button onclick="Stop()"> Stop </button>
+    </div>
 
+  
     <script>
+        let osc1;
         function Play() {
             audioctx = new AudioContext();
-            osc = new OscillatorNode(audioctx); // オシレータを作成
-            osc.connect(audioctx.destination);  // オシレータを出力に接続
-            osc.start();
+            // オシレータを作成
+            osc1 = new OscillatorNode(audioctx);
+            // オシレータを出力audioctx.destinationに接続
+            // destinationはaudioctxの最終出力ポイント, ここから音が出ていく
+            osc1.connect(audioctx.destination);
+            osc1.start();
         }
 
         function Stop() {
-            osc.stop();
+            osc1.stop();
         }
     </script>
 </body>
+<style>
+    .f{
+        display: flex
+    }
+</style>
 </html>
