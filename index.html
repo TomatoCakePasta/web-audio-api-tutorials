@@ -70,6 +70,11 @@
         </table>
     </div>
 
+    <div class="f">
+        <h3>Node Lifetime</h3>
+        <button onclick="Start4()">Start</button>
+    </div>
+
   
     <script>
         let osc1;
@@ -160,6 +165,32 @@
             osc3.frequency.value = document.getElementById("oscfreqval").innerHTML = document.getElementById("oscfreq").value;
             lfo3.frequency.value = document.getElementById("lfofreqval").innerHTML = document.getElementById("lfofreq").value;
             depth3.gain.value = document.getElementById("depthval").innerHTML = document.getElementById("depth").value;
+        }
+
+        let audioctx4, mastervol4;
+        function Start4() {
+            if (!audioctx4) {
+                audioctx4 = new AudioContext();
+                mastervol4 = new GainNode(audioctx4);
+                // mastervol4 -> destination
+                mastervol4.connect(audioctx4.destination);
+            }
+
+            let t0 = audioctx4.currentTime;
+            for (let i = 0; i < 10; i++) {
+                const osc = new OscillatorNode(audioctx4);
+                const gain = new GainNode(audioctx4);
+
+                osc.frequency.value = 100 + Math.random() * 1000;
+                gain.gain.value = 0.2 + Math.random() * 0.8;
+                // osc -> gain -> mastervol4
+                osc.connect(gain).connect(mastervol4);
+                // スケジュールされてるので終了次第以下の順番でノードが削除される
+                // osc, 次にgainが削除
+                // mastervolはグローバル参照のため残る
+                osc.start(t0 + i * 0.5 + 0.5);
+                osc.stop(t0 + i * 0.5 + 0.6);
+            }
         }
     </script>
 </body>
