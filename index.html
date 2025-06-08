@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>First Step</h1>
+    <button onclick="Play()"> Play </button><br>
+    <button onclick="Stop()"> Stop </button>
+
+    <script>
+        function Play() {
+            audioctx = new AudioContext();
+            osc = new OscillatorNode(audioctx); // オシレータを作成
+            osc.connect(audioctx.destination);  // オシレータを出力に接続
+            osc.start();
+        }
+
+        function Stop() {
+            osc.stop();
+        }
+    </script>
+</body>
+</html>
