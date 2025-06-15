@@ -75,6 +75,10 @@
         <button onclick="Start4()">Start</button>
     </div>
 
+    <div class="f">
+        <h3>Audio Buffer</h3>
+        <button onclick="Start5()">Start</button>
+    </div>
   
     <script>
         let osc1;
@@ -191,6 +195,33 @@
                 osc.start(t0 + i * 0.5 + 0.5);
                 osc.stop(t0 + i * 0.5 + 0.6);
             }
+        }
+
+        let audioctx5, sound5;
+        async function Start5 () {
+            audioctx5 = new AudioContext();
+            sound5 = await LoadSample(audioctx5, "./snare.wav");
+
+            const src = new AudioBufferSourceNode(audioctx5, { buffer : sound5 });
+            // src -> destination
+            src.connect(audioctx5.destination);
+            src.start();
+        }
+
+        function LoadSample(actx, url) {
+            return new Promise((resolv) => {
+                // 指定urlから音声データを取得
+                fetch(url).then((response) => {
+                    // 音声データを取得
+                    return response.arrayBuffer();
+                }).then((arraybuf) => {
+                    // 取得した音声データをデコード
+                    return actx.decodeAudioData(arraybuf);
+                }).then((buf) => {
+                    // デコード完了後AudioBufferオブジェクトを返す
+                    resolv(buf);
+                })
+            });
         }
     </script>
 </body>
